@@ -19,5 +19,7 @@ jobs:
       - run:
           name: Running in a Unique Container
           command: |
+            cd nodeServer
+            npm install
             node -v
-            node nodeServer/app.js
+            node app.js
