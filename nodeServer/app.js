@@ -32,6 +32,10 @@ socketio.on("connection", socket => {
 });
 
 
-http.listen(3000, () => {
+var server = http.listen(3000, () => {
     console.log("Listening at port 3000");
+    setTimeout(function() {
+        server.close();
+        console.log("Stopped listening after timeout");
+    }, 5000);
 })
