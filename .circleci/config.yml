@@ -23,6 +23,7 @@ jobs:
     docker:
       - image: circleci/node:10-browsers
     steps:
+      - checkout
       - run:
           name: Running In A Container With Node
           command: |
