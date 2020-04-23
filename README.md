@@ -13,4 +13,4 @@
 
 Created just for POC with sockets and circleci
 
-TODO: remove the `server.close();` from app.js 
+TODO: remove the `server.close();` from app.js and make tests work
