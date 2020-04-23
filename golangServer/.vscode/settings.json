@@ -1,0 +1,6 @@
+{
+    "go": {
+        "autocompleteUnimportedPackages": true,
+        "buildOnSave": true,
+    },
+}

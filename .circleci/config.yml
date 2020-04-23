@@ -31,7 +31,6 @@ jobs:
             npm install
             node -v
             node app.js
-  
   Now-Complete:
     docker:
       - image: alpine:3.7
@@ -40,6 +39,14 @@ jobs:
           name: Approval Complete
           command: |
             echo 'Do work once the approval has completed'
+  Hold-For-Approval:
+    docker:
+      - image: alpine:3.7
+    steps:
+      - run:
+          name: Holding for approval name
+          command: |
+            echo 'Approve meee :('
 
 workflows:
  version: 2
