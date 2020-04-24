@@ -28,7 +28,7 @@ export default {
     this.ws = new WebSocket("ws://localhost:3000/ws");
     this.ws.onopen = () => {
       console.log("onopen works!!");
-      this.ws.send("{ message:}");
+      this.ws.send("xyz");
     };
 
     this.ws.onmessage = (msg) => {
@@ -63,9 +63,9 @@ export default {
     // });
   },
   methods: {
-    send: function() {
+    send: function(key) {
       console.log("sending...");
-      this.ws.send({ messages: "hello from client!" });
+      this.ws.send(key);
       this.newMsg = ""; // Reset newMsg
     },
     move(direction) {
@@ -75,7 +75,7 @@ export default {
     },
     keyPress(event) {
       console.log(event);
-      this.send();
+      this.send(event.key);
       // this.socket.emit("move", event.key);
     }
   }

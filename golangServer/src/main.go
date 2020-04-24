@@ -81,14 +81,16 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 func reader(conn *websocket.Conn) {
 	for {
-		messageType, p, err := conn.ReadMessage()
+		_, p, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		log.Println(messageType)
-		log.Println((p))
+		// log.Println(messageType)
+		// log.Println((p))
+		s := string(p)
+		fmt.Println(s)
 
 		if err := conn.WriteMessage(1, []byte("Here is a string....")); err != nil {
 			log.Println(err)
