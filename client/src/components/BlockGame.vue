@@ -22,20 +22,15 @@ export default {
     };
   },
   created() {
-    // this.socket = new WebSocket("ws://localhost:3000");
     // this.socket = io("http://localhost:3000");
-    console.log("creating socket ..." + "ws://" + window.location.host + "/ws");
+    console.log("creating socket ..." + "ws://localhost:3000/ws");
     this.ws = new WebSocket("ws://localhost:3000/ws");
     this.ws.onopen = () => {
       console.log("onopen works!!");
       this.ws.send("xyz");
     };
 
-    this.ws.onmessage = (msg) => {
-      console.log("onmessage RECEIVED!!");
-      console.log(msg);
-      // this.ws.send(JSON({ message: "HELLO!!" }));
-    };
+
 
     this.ws.onclose = event => {
       console.log("closing connection: ", event);
@@ -44,18 +39,25 @@ export default {
     this.ws.onerror = error => {
       console.log("Socket error: ", error);
     };
-    // console.log("opened socket: " + "ws://" + window.location.host + "/ws");
-    this.ws.addEventListener("message", function(e) {
-      console.log("received message!");
-      // var msg = JSON.parse(e.data);
-      console.log(e.data);
-      // var element = document.getElementById("chat-messages");
-      // element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
-    });
+    // this.ws.addEventListener("message", function(e) {
+    //   console.log("received message!");
+    //   // console.log(e.data);
+    // });
   },
   mounted() {
     document.addEventListener("keydown", this.keyPress);
     this.context = this.$refs.game.getContext("2d");
+    this.ws.onmessage = msg => {
+      let data = JSON.parse(msg.data)
+      console.log(data);
+      this.position.x = data.X;
+      this.position.y = data.Y;
+      this.context.clearRect(0, 0, 640, 640);
+      this.context.fillRect(this.position.x, this.position.y, 20, 20);
+      console.log(this.position);
+      // this.ws.send(JSON({ message: "HELLO!!" }));
+    };
+
     // this.socket.on("position", data => {
     //   this.position = data;
     //   this.context.clearRect(0, 0, 640, 640);

@@ -10,7 +10,7 @@ import (
 )
 
 var clients = make(map[*websocket.Conn]bool) // connected clients
-var broadcast = make(chan Message)           // broadcast channel
+var broadcast = make(chan Position)          // broadcast channel
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
@@ -18,12 +18,13 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// Message defines our message object
-type Message struct {
-	// Email    string `json:"email"`
-	// Username string `json:"username"`
-	Message string `json:"message"`
+// Position defines our position object
+type Position struct {
+	X int64
+	Y int64
 }
+
+var pos = Position{X: 100, Y: 100}
 
 func main() {
 	// Create a simple file server
@@ -34,7 +35,7 @@ func main() {
 	http.HandleFunc("/ws", handleConnections)
 
 	// Start listening for incoming chat messages
-	go handleMessages()
+	go broadcastMessage()
 
 	// Start the server on localhost port 8000 and log any errors
 	log.Println("http server started on :3000")
@@ -61,7 +62,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	clients[ws] = true
 
 	for {
-		fmt.Println("the request:")
+
 		// fmt.Println(ws)
 
 		reader(ws)
@@ -87,34 +88,51 @@ func reader(conn *websocket.Conn) {
 			return
 		}
 
-		// log.Println(messageType)
-		// log.Println((p))
 		s := string(p)
+		fmt.Println("the request:")
 		fmt.Println(s)
+		switch s {
+		case "a":
+			pos.X -= 5
+			// socketio.emit("position", position);
+			break
+		case "d":
+			pos.X += 5
+			// socketio.emit("position", position);
+			break
+		case "w":
+			pos.Y -= 5
+			// socketio.emit("position", position);
+			break
+		case "s":
+			pos.Y += 5
+			break
+		}
 
-		if err := conn.WriteMessage(1, []byte("Here is a string....")); err != nil {
+		if err := conn.WriteJSON(pos); err != nil {
 			log.Println(err)
 			return
 		}
+		broadcast <- pos
 	}
 }
 
-func handleMessages() {
+func broadcastMessage() {
 	fmt.Println("handleMessages")
 
-	// for {
-	// 	// Grab the next message from the broadcast channel
-	// 	msg := <-broadcast
-	// 	// Send it out to every client that is currently connected
-	// 	for client := range clients {
-	// 		err := client.WriteJSON(msg)
-	// 		if err != nil {
-	// 			log.Printf("error: %v", err)
-	// 			client.Close()
-	// 			delete(clients, client)
-	// 		}
-	// 	}
-	// }
+	for {
+		// Grab the next message from the broadcast channel
+		msg := <-broadcast
+		// Send it out to every client that is currently connected
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error: %v", err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
+	}
 }
 
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
